@@ -1,0 +1,6 @@
+BEGIN {}
+      {
+        print $1 
+	system("grep " $1 " tweets_9_3.csv >> tweets_base.csv" )
+      }
+END {}
