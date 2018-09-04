@@ -1,0 +1,11 @@
+awk -F, '{print $1}' inputfile
+awk -F, ' $1 !~ /"[0-9]/{print $1}' toutN2 > toutN
+awk -F, ' $1 !~ /"[0-9]/{print $0}' toutN2 > toutN
+
+#Preprocess archive file to avoid  header rows and newlines within a tweet
+awk -F, ' $1 ~ /"[0-9]/{print $0}' toutN2 > toutN
+
+awk -F, '{printf "%s," ",%s" ",%s" ",%s\n",$1,$2,$3,$4}' t01.csv
+
+comm -123 file1 file2
+#(1 = in 1 not 2 2 = in 2 not 1 3 = in both use - to suppress specific)) 
