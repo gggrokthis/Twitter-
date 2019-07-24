@@ -1,0 +1,143 @@
+Using CML_Manage_My_Tweets
+
+Author: Ms Gitanjali "Gigi" GulveSehgal AKA Gitanjali Gulve Sehgal nee' Gulve / Cupertino California
+
+Version: v2.0
+
+Description: Posted script can execute following actions. Follow the user-friendly prompts.
+	(1) Delete selected tweets from user's own account
+	(2) Unfavorite selected tweets favorited by user
+	(3) Lookup Followers of selected twitter UserIDs
+	(4) Lookup Friends of selected twitter UserIDs
+	(5) Look up available account information of selected twitter UserIDs
+Helpful logfile updates posted in "statfile" created in current working directory. Will always append to any existing file with that name.
+
+Installation : You will need the following installed first :
+        1. Tweepy (http://pypi.python.org/pypi/tweepy/1.7.1) 
+	2. Python 3.0
+
+Other Requirements: A valid Twitter account for which you have login permissions 
+
+Things to do before starting:
+1. Make sure you have a valid account on Twitter (for which you have login permissions)
+2. Current registration on Twitter Developer Forum
+3. You will need to generate one input file (per action) based on input file formats below
+   Note:  It may be easy to do this by editing Twitter generated archive files first
+
+   Input File Formats:
+   CAUTION: It is CRITICAL that the input file format be followed. Not doing so may cause 
+            unintended irrecoverable errors.
+   Script requires Comma delimitted readable csv files with following minimal fields per
+   row (one row per userid/tweetID)
+	(1) Delete - 
+	NumericTweetID, Field ignored, Field ignored, Date-time-stamp when Tweet was posted, 
+        Field ignored, Text of the posted tweet, fields ignored
+	
+   	Note: At a minimum need 1st 6 fields (5 commas)) and Field order is important
+
+	(2) Unfavorite - NumericTweetID, Fields ignored
+
+	(3) Lookup Followers - NumericUserID, Fields ignored 
+
+	(4) Lookup Friends - NumericUserID, Fields ignored
+
+	(5) Lookup Users - NumericUserID, Fields ignored
+
+File may not have .csv extension as long as it is a readable text file and has the right 
+field format. However it may throw an exception for some non-csv filetypes.
+
+Execution Details:
+You will need to get the following
+ 1.  consumer key
+     consumer secret token
+     access token
+     access token secret
+     A. To do so, register a twitter application at https://apps.twitter.com
+     B. Ensure the application has read AND write access to be able to delete
+     C. To use this script register the name of this script as the name of app
+        (without the .py part)
+     D. It is recommended that you delete the app (and remove its access to
+        your profile) when not in use for the sake of security and
+        recreate and regenerate the keys and secrets when needed and edit
+        the program file as needed (cut and paste will cause minimal errors)
+	Additionally remove the key and script values from your copy of the script
+
+Execution Command:
+	python3 CML_Manage_My_Tweets.py
+
+
+
+
+Limitations:
+01. A familarity with Unix is necessary (file system and directory  management commands etc.) to run this script
+
+02. A valid user login to Twitter is required to execute this program
+
+03. Ability to execute operations on users and tweets is limited by the permissions granted to the user by Twitter 
+
+04. Twitter API rate limits may apply based on size of input files for some operations and slow down execution
+
+05. If using Twitter archive files to generate input lists, to ensure all desired data is input, generate 
+    and use a fresh Twitter archive file 
+
+06. Manual steps needed (and recommended) to register app and obtain user authentication parameters from Twitter
+
+07. Updates are permanent in Twitter thus it is recommended to backup archive data and validate input files 
+    before execution
+
+08. Program handles input files in directories other than current working directory, however, needs 
+    fully defined path name (sans ~) 
+
+09. I did not have time to add any file format validation logic to the program. Program will throw an exception 
+    message and stop if file format is incorrect
+
+10. Twitter does not currently allow unfavorite of previously favorited tweets if the tweet owner has blocked
+    the favoriting account, or if the tweet owner is now in private mode and you are not following or if the 
+    tweet owner is suspended etc.  ( I disagree with their rule but that's the current implementation)
+
+   FYI some useful error codes you may encounter in the output: (full list at Twitter developer forum)
+	Error codes:
+	144 - Tweet not found 
+	142 - Can't unfave/fave tweets of protected user you don't follow
+	139 - You have already favorited this status
+	136 - Can't unfave/fave tweets of user who has blocked you  
+	96  - Narrow cast id params must be integers (delete extra space in csv preceeding 1st column!)
+	50  - User not found 
+
+For Advanced Users:
+You may want to look at some simple Unix awk and grep scripts I wrote to post-process the logfile to do
+sanity checks and ensure that the desired results occurred 
+e.g.	Count status ids in both input file and logfile,
+	Check for failed messages, 
+	Use some/all failed status ids to manually look up tweet and verify status
+etc. 
+File named “awkex” is checked in as an example 
+
+
+Future: 
+Potential future enhancements if you feel like it:
+    1. Use the keys and secrets in a more secure fashion  (read from an encrypted file etc.)
+    2. Enforce no size limit on the input file and add more management of rate limits inside the program
+    3. Use an awk script wrapper to do all the set up work such as
+       generate input files(e.g. by date etc.), version and manage the output files
+    4. For very large file sizes, utilize forked processes / multithreading
+
+Why use archive files?
+While using the archive files to generate tweetIds for delete or unfavorite
+feels like an extra step it makes the code run more efficiently for more 
+use cases (assuming there is no failure in Twitter's archive functionality) 
+for the following reasons :
+ 1. You get to select which tweets to not unfavorite by removing them from your copy
+    of the archive file before executing the code
+ 2. There are fewer api calls made as the script doesn't have to first
+    read the timeline or otherwise collect the tweetids from the server.
+    Unless you have really old favorites in which case you may have to like then unlike
+    which will cause additional API calls.
+ 3. 1. Above is the only potentially time consuming forced manual step which could
+    be semi automated with custom unix scripts run on the .csv archive file as a
+    pre-processing step
+ 4. You can retain a copy of your archive (pre delete) and have it for posterity
+    Note: Archive won’t save your photos and some links may be unusable.
+ 5. Discounting eventual consistency, you may encounter interesting gaps between UI/App and 
+    Archive version of your account which may signal existence of MTM attack issues (extreme but true :D)
+
