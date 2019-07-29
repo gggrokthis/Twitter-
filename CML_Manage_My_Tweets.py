@@ -81,7 +81,7 @@
 
 
 #@requirements:Python 3.0,Tweepy (http://pypi.python.org/pypi/tweepy/1.7.1)
-#@author: Ms Gitanjali "Gigi" GulveSehgal (A.K.A Gitanjali Gulve Sehgali nee' Gulve)
+#@author: Ms Gitanjali "Gigi" GulveSehgal (A.K.A Gitanjali Gulve Sehgal nee' Gulve)
 #!/usr/bin/python
 
 import csv
